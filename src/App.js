@@ -1,25 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
+import {ErrorBoundary} from 'react-error-boundary';
+import FXApp from './main';
+import {ErrorFallback} from './components';
+import {Main} from './styled';
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Main>
+      <h1>Forex Exchange</h1>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <FXApp />
+      </ErrorBoundary>
+    </Main>
   );
 }
-
-export default App;
