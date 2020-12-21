@@ -64,10 +64,10 @@ export const Wrapper = styled.div`
   }
 `;
 
-export default function Select({options, value, onChange}) {
+export default function Select({options, value, onChange, id}) {
   return (
     <Wrapper>
-      <select value={value} onChange={onChange}>
+      <select value={value} onChange={onChange} id={id}>
         {options.map((option) => (
           <option key={option} value={option}>
             {option}

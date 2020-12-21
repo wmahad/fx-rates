@@ -6,32 +6,28 @@ import {Section, Switch, DatePicker, Results} from './styled';
 import {fetcher, generateUri, DATE_PICKER_FORMAT} from './utils';
 
 const today = new Date();
+let currencies = [];
 
 export default function Main() {
   const [date, setDate] = useState(() => today);
   const [base, setBase] = useState(1);
   const [quote, setQuote] = useState(1);
-  const [baseCurrency, setBaseCurrency] = useState('');
-  const [quoteCurrency, setQuoteCurrency] = useState('');
-  const [currencies, setCurrencies] = useState([]);
-  const [rates, setRates] = useState({});
+  const [baseCurrency, setBaseCurrency] = useState('EUR');
+  const [quoteCurrency, setQuoteCurrency] = useState('USD');
 
   const uri = generateUri(baseCurrency, date);
 
-  const {error} = useSWR(uri, fetcher, {
-    onSuccess({rates: ratesObj, base: baseKey}) {
-      const ratesArray = Object.keys(ratesObj);
-      const firstCurrency = quoteCurrency || ratesArray[0];
-      setCurrencies((arr) => {
-        if (arr.length) return arr;
-        return [baseKey, ...ratesArray];
-      });
-      setBaseCurrency(baseKey);
-      setQuoteCurrency(firstCurrency);
-      setQuote(updateQuoteAmount(base, ratesObj[firstCurrency]));
-      setRates(ratesObj);
+  const {error, data = {}} = useSWR(uri, fetcher, {
+    onSuccess({rates: ratesObj}) {
+      setQuote(updateQuoteAmount(base, ratesObj[quoteCurrency]));
     },
   });
+
+  const {rates = {}, base: baseKey} = data;
+  const ratesArray = Object.keys(rates);
+  if (!currencies.length && baseKey && ratesArray.length) {
+    currencies = [baseKey, ...ratesArray];
+  }
 
   if (error) throw error;
 
@@ -68,6 +64,7 @@ export default function Main() {
         <CurrencySection
           amount={base}
           name="base-currency"
+          label="From"
           currencies={currencies}
           currency={baseCurrency}
           onCurrencyChange={(e) => setBaseCurrency(e.target.value)}
@@ -79,6 +76,7 @@ export default function Main() {
         </Switch>
         <CurrencySection
           amount={quote}
+          label="To"
           name="quote-currency"
           currencies={currencies}
           currency={quoteCurrency}
