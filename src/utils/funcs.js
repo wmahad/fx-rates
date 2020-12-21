@@ -10,7 +10,9 @@ export const generateUri = (base, date) => {
 export const generateHistoryUri = (date, base, quote, days) => {
   const startDate = format(subDays(date, days), DATE_FORMAT);
   const endDate = format(date, DATE_FORMAT);
-  return `${API_URL}history?base=${base}&start_at=${startDate}&end_at=${endDate}&symbols=${quote}`;
+  return `${API_URL}history?base=${base}&start_at=${startDate}&end_at=${endDate}${
+    quote ? `&symbols=${quote}` : ''
+  }`;
 };
 
 const defaultData = {
@@ -30,7 +32,7 @@ const defaultData = {
 };
 
 export const getHistoricalRates = (data = {}, quote) => {
-  const {rates: dataSets, base} = data;
+  const {rates: dataSets = {}, base} = data;
   const rates = Object.entries(dataSets).reduce((acc, [key, rate]) => {
     return {...acc, [key]: rate[quote]};
   }, {});
